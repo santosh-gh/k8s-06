@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mychart.fullname" . }}-store-front
+  labels:
+  {{- include "mychart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.storeFront.type }}
+  selector:
+    app: store-front
+    {{- include "mychart.selectorLabels" . | nindent 4 }}
+  ports:
+  {{- .Values.storeFront.ports | toYaml | nindent 2 }}

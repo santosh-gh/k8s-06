@@ -1,0 +1,51 @@
+trigger: none
+
+variables:
+  serviceConnection: 'arm-svc-con'
+  aksCluster: 'aks-onlinestore-dev-uksouth-001'
+  aksResourceGroup: 'rg-onlinestore-dev-uksouth-001'
+  namespace: 'default'
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: Build
+    displayName: Build and publish stage
+    jobs:
+      - job: BuildPublishDockerImages
+        displayName: Build Publish Docker Images
+        steps:
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(System.DefaultWorkingDirectory)/manifests/config'
+              ArtifactName: 'config-manifests'
+              publishLocation: 'Container'
+  
+  - stage: Deploy
+    displayName: Deploy stage
+    dependsOn: Build
+
+    jobs:
+    - deployment: Deploy
+      displayName: Deploy
+      pool:
+        vmImage: ubuntu-latest
+      environment: 'Dev'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                buildType: current               
+                artifactName: config-manifests
+                targetPath: $(System.ArtifactsDirectory)/manifests/config
+            
+            - template: appTemplates/deploy.yml
+              parameters:
+                serviceConnection: $(serviceConnection)
+                aksObject: 'config'
+                manifestPath: $(System.ArtifactsDirectory)/manifests/config
+                aksResourceGroup: $(aksResourceGroup)                
+                aksCluster: $(aksCluster)

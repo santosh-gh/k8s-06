@@ -1,0 +1,108 @@
+kubernetesClusterDomain: cluster.local
+orderService:
+  nodeSelector:
+    kubernetes.io/os: linux
+  orderService:
+    env:
+      fastifyAddress: 0.0.0.0
+      orderQueueHostname: rabbitmq
+      orderQueueName: orders
+      orderQueuePassword: password
+      orderQueuePort: "5672"
+      orderQueueUsername: username
+    image:
+      repository: acronlinestoredevuksouth001.azurecr.io/order
+      tag: v1
+    resources:
+      limits:
+        cpu: 75m
+        memory: 128Mi
+      requests:
+        cpu: 1m
+        memory: 50Mi
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+  replicas: 1
+  type: ClusterIP
+  waitForRabbitmq:
+    image:
+      repository: busybox
+      tag: latest
+    resources:
+      limits:
+        cpu: 75m
+        memory: 128Mi
+      requests:
+        cpu: 1m
+        memory: 50Mi
+productService:
+  nodeSelector:
+    kubernetes.io/os: linux
+  ports:
+  - name: http
+    port: 3002
+    targetPort: 3002
+  productService:
+    env:
+      aiServiceUrl: http://ai-service:5001/
+    image:
+      repository: acronlinestoredevuksouth001.azurecr.io/product
+      tag: v1
+    resources:
+      limits:
+        cpu: 2m
+        memory: 20Mi
+      requests:
+        cpu: 1m
+        memory: 1Mi
+  replicas: 1
+  type: ClusterIP
+rabbitmq:
+  nodeSelector:
+    kubernetes.io/os: linux
+  ports:
+  - name: rabbitmq-amqp
+    port: 5672
+    targetPort: 5672
+  - name: rabbitmq-http
+    port: 15672
+    targetPort: 15672
+  rabbitmq:
+    env:
+      rabbitmqDefaultPass: password
+      rabbitmqDefaultUser: username
+    image:
+      repository: mcr.microsoft.com/azurelinux/base/rabbitmq-server
+      tag: "3.13"
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 10m
+        memory: 128Mi
+  replicas: 1
+  type: ClusterIP
+rabbitmqEnabledPlugins:
+  rabbitmqEnabledPlugins: '[rabbitmq_management,rabbitmq_prometheus,rabbitmq_amqp1_0].'
+storeFront:
+  nodeSelector:
+    kubernetes.io/os: linux
+  ports:
+  - port: 80
+    targetPort: 8080
+  replicas: 1
+  storeFront:
+    image:
+      repository: acronlinestoredevuksouth001.azurecr.io/store-front
+      tag: v1
+    resources:
+      limits:
+        cpu: "1"
+        memory: 512Mi
+      requests:
+        cpu: 1m
+        memory: 200Mi
+  type: LoadBalancer

@@ -1,0 +1,98 @@
+trigger: none
+
+variables:
+  serviceConnection: 'arm-svc-con'
+  aksCluster: 'aks-onlinestore-dev-uksouth-001'
+  aksResourceGroup: 'rg-onlinestore-dev-uksouth-001'
+  namespace: 'default'
+  imageName: 'order'
+  #tag: $(Build.BuildId)
+  tag: latest
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: Build
+    displayName: Build and publish stage
+    jobs:
+      - job: BuildPublishDockerImages
+        displayName: Build Publish Docker Images
+        steps:
+          - task: DockerInstaller@0
+            displayName: Install Docker
+            inputs:
+              dockerVersion: '17.09.0-ce'
+
+          - template: appTemplates/build.yml
+            parameters:
+              acrServiceConnection: 'acr-svc-connection'
+              imageName: $(imageName)
+              dockerFilePath: '$(Build.sourcesdirectory)/app/order-service/Dockerfile'
+              tag: $(tag)       
+
+          # Task 2 publish build artifacts
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(System.DefaultWorkingDirectory)/manifests/order'
+              ArtifactName: 'order-manifests'
+              publishLocation: 'Container'
+
+  - stage: Deploy
+    displayName: Deploy stage
+    dependsOn: Build
+
+    jobs:
+    - deployment: Deploy
+      displayName: Deploy
+      pool:
+        vmImage: ubuntu-latest
+      environment: 'Dev'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                buildType: 'current'                
+                artifactName: 'order-manifests' 
+                targetPath: '$(System.ArtifactsDirectory)/manifests/order'
+
+            - script: |
+                echo "Listing ArtifactsDirectory:"
+                ls -R "$(System.ArtifactsDirectory)"
+            
+            - template: appTemplates/deploy.yml
+              parameters:
+                serviceConnection: $(serviceConnection)
+                aksObject: 'order'
+                manifestPath: $(System.ArtifactsDirectory)/manifests/order
+                aksResourceGroup: $(aksResourceGroup)                
+                aksCluster: $(aksCluster)
+                namespace: $(namespace)
+
+            # - task: AzureCLI@2
+            #   displayName: 'Deploy to AKS with --validate=false'
+            #   inputs:
+            #     azureSubscription: $(serviceConnection)
+            #     scriptType: 'bash'
+            #     scriptLocation: 'inlineScript'
+            #     inlineScript: |
+            #       az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksCluster)
+            #       kubectl apply -f $(System.ArtifactsDirectory)/manifests/ --validate=false
+
+            # - task: KubernetesManifest@1
+            #   displayName: Deploy to Kubernetes cluster
+            #   inputs:
+            #     action: deploy
+            #     kubernetesServiceConnection: 'aks-svc-connection'
+            #     namespace: $(namespace)
+            #     manifests: |
+            #       $(System.ArtifactsDirectory)/manifests/order-deployment.yml
+            #       $(System.ArtifactsDirectory)/manifests/order-service.yml
+            #       $(System.ArtifactsDirectory)/manifests/product-deployment.yml
+            #       $(System.ArtifactsDirectory)/manifests/product-service.yml
+            #       $(System.ArtifactsDirectory)/manifests/store-front-deployment.yml
+            #       $(System.ArtifactsDirectory)/manifests/store-front-service.yml
+            #       $(System.ArtifactsDirectory)/manifests/rabbitmq-statefulset.yml
+            #       $(System.ArtifactsDirectory)/manifests/rabbitmq-service.yml

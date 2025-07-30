@@ -1,0 +1,24 @@
+parameters:
+- name: "serviceConnection"
+  type: string
+- name: "aksObject"
+  type: string
+- name: "aksResourceGroup"
+  type: string
+- name: "aksCluster"
+  type: string
+- name: "manifestPath"
+  type: string
+- name: "namespace"
+  type: string
+
+steps:  
+  - task: AzureCLI@2
+    displayName: 'Deploy $(aksObject) to AKS'
+    inputs:
+      azureSubscription: $(serviceConnection)
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksCluster)
+        kubectl apply -f $(manifestPath) -n $(namespace) --validate=false

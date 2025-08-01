@@ -14,8 +14,34 @@ variables:
   environment: "dev"
   artifactName: 'storehelmchart'
   helmChartName: 'mychart'
+  imageTag: v1 #$(Build.BuildId)   
+  imageName: 'store-front'
 
 stages:
+  - stage: Build
+    displayName: Build and Publish
+    jobs:
+      - job: BuildPublishDockerImages
+        displayName: Build Publish Docker Images
+        steps:
+          - task: DockerInstaller@0
+            displayName: Install Docker
+            inputs:
+              dockerVersion: '17.09.0-ce'
+
+          - template: appTemplates/build.yml
+            parameters:
+              acrServiceConnection: $(acrServiceConnection)
+              imageName: $(imageName)
+              dockerFilePath: '$(Build.sourcesdirectory)/app/store-front/Dockerfile'
+              tag: $(imageTag)
+
+          - task: PublishPipelineArtifact@1
+            displayName: Publish Manifest
+            inputs:
+              artifactName: $(artifactName)
+              path: $(artifactName)
+
   - stage: HelmPackagePush
     displayName: Helm Package and Push
     jobs:
@@ -81,7 +107,7 @@ stages:
           namespace: $(namespace)
           command: upgrade
           chartType: FilePath
-          chartPath: './mychart/config'
+          chartPath: './mychart/store-front'
           releaseName: 'storeapp'
           install: true
           waitForExecution: true                  

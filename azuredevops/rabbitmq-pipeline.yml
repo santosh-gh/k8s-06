@@ -16,33 +16,6 @@ variables:
   helmChartName: 'mychart'
 
 stages:
-  - stage: HelmPackagePush
-    displayName: Helm Package and Push
-    jobs:
-    - job: Helm
-      pool:
-        vmImage: 'ubuntu-latest'
-      steps:
-      - checkout: self
-
-      - task: AzureCLI@2
-        inputs:
-          azureSubscription: $(azureSubscription)
-          scriptType: bash
-          scriptLocation: inlineScript
-          inlineScript: |
-            echo "Package Helm chart"
-            helm package ./${{ variables.helmChartPath }} --version ${{ variables.helmChartVersion }} -d .
-
-            echo "Login to ACR for Helm push"
-            az acr login --name ${{ variables.acrName }}
-
-            echo "Enabling OCI support"
-            export HELM_EXPERIMENTAL_OCI=1
-
-            echo "Push Helm chart to ACR"
-            helm push ./${{ variables.helmChartName }}-${{ variables.helmChartVersion }}.tgz oci://${{ variables.acrName }}.azurecr.io/helm
-
   - stage: Deploy
     displayName: Deploy to AKS
     dependsOn: HelmPackagePush
@@ -81,7 +54,7 @@ stages:
           namespace: $(namespace)
           command: upgrade
           chartType: FilePath
-          chartPath: './mychart/config'
+          chartPath: './mychart/rabbitmq'
           releaseName: 'storeapp'
           install: true
           waitForExecution: true                  

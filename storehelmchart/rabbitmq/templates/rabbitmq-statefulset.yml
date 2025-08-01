@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "rabbitmq.fullname" . }}-rabbitmq
+  labels:
+  {{- include "rabbitmq.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.rabbitmq.replicas }}
+  selector:
+    matchLabels:
+      app: rabbitmq
+  serviceName: {{ include "rabbitmq.fullname" . }}-rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - env:
+        - name: RABBITMQ_DEFAULT_USER
+          value: {{ quote .Values.rabbitmq.rabbitmq.env.rabbitmqDefaultUser }}
+        - name: RABBITMQ_DEFAULT_PASS
+          value: {{ quote .Values.rabbitmq.rabbitmq.env.rabbitmqDefaultPass }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.rabbitmq.rabbitmq.image.repository }}:{{ .Values.rabbitmq.rabbitmq.image.tag
+          | default .Chart.AppVersion }}
+        name: rabbitmq
+        ports:
+        - containerPort: 5672
+          name: rabbitmq-amqp
+        - containerPort: 15672
+          name: rabbitmq-http
+        resources: {{- toYaml .Values.rabbitmq.rabbitmq.resources | nindent 10 }}
+        volumeMounts:
+        - mountPath: /etc/rabbitmq/enabled_plugins
+          name: rabbitmq-enabled-plugins
+          subPath: enabled_plugins
+      nodeSelector: {{- toYaml .Values.rabbitmq.nodeSelector | nindent 8 }}
+      volumes:
+      - configMap:
+          items:
+          - key: rabbitmq_enabled_plugins
+            path: enabled_plugins
+          name: rabbitmq-enabled-plugins
+        name: rabbitmq-enabled-plugins
+  updateStrategy: {}

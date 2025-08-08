@@ -4,19 +4,16 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  serviceConnection: 'arm-svc-con'
-  aksCluster: 'aks-onlinestore-dev-uksouth-001'
-  aksResourceGroup: 'rg-onlinestore-dev-uksouth-001'
-  acrServiceConnection: 'acr-svc-connection'
-  aksServiceConnection: 'aks-svc-connection'
-  acrName: 'acronlinestoredevuksouth001'
-  namespace: 'default'
-  environment: "dev"
-  artifactName: 'storehelmchart'
-  helmChartName: 'mychart'
-  imageTag: v1 #$(Build.BuildId)   
-  imageName: 'product'
-
+- group: 'k8s-dev'
+- name: namespace
+  value: 'default'
+- name: chartName 
+  value: 'storehelmchart'
+- name: imageTag
+  value: $(Build.BuildId)
+- name: imageName
+  value: 'product'
+  
 stages:
   - stage: Build
     displayName: Build and Publish
@@ -34,77 +31,51 @@ stages:
               acrServiceConnection: $(acrServiceConnection)
               imageName: $(imageName)
               dockerFilePath: '$(Build.sourcesdirectory)/app/product-service/Dockerfile'
-              tag: $(imageTag)          
+              tag: $(imageTag)
 
-  - stage: HelmPackagePush
-    displayName: Helm Package and Push
-    jobs:
-    - job: Helm
-      pool:
-        vmImage: 'ubuntu-latest'
-      steps:
-      - checkout: self
-
-      - task: AzureCLI@2
-        inputs:
-          azureSubscription: $(azureSubscription)
-          scriptType: bash
-          scriptLocation: inlineScript
-          inlineScript: |
-            echo "Package Helm chart"
-            helm package ./${{ variables.helmChartPath }} --version ${{ variables.helmChartVersion }} -d .
-
-            echo "Login to ACR for Helm push"
-            az acr login --name ${{ variables.acrName }}
-
-            sed -i "s/tag:.*/tag: $(imageTag)/" ./${{ variables.helmChartName }}/product/values.yaml
-            cat ./${{ variables.helmChartName }}/product/values.yaml
-
-            echo "Enabling OCI support"
-            export HELM_EXPERIMENTAL_OCI=1
-
-            echo "Push Helm chart to ACR"
-            helm push ./${{ variables.helmChartName }}-${{ variables.helmChartVersion }}.tgz oci://${{ variables.acrName }}.azurecr.io/helm
+          - task: PublishPipelineArtifact@1
+            displayName: Publish Manifest
+            inputs:
+              artifactName: $(chartName)
+              path: $(chartName)
 
   - stage: Deploy
-    displayName: Deploy to AKS
-    dependsOn: HelmPackagePush
     jobs:
-    - job: Deploy
-      pool:
-        vmImage: 'ubuntu-latest'
-      steps:
-      - checkout: self
+    - deployment: DeployAKS
+      displayName: Deploy AKS
+      environment: $(environment)
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - download: current
+                artifact: $(chartName)
 
-      - task: AzureCLI@2
-        inputs:
-          azureSubscription: $(serviceConnection)
-          scriptType: bash
-          scriptLocation: inlineScript
-          inlineScript: |
-            echo "Set Helm OCI support"
-            export HELM_EXPERIMENTAL_OCI=1
+              - script: |
+                  echo "Workspace Directory: $(Pipeline.Workspace)"
+                  ls -R "$(Pipeline.Workspace)"
 
-            echo "Login to ACR"
-            az acr login --name ${{ variables.acrName }}
+              - task: AzureCLI@2
+                displayName: Get AKS Credentials
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  scriptType: bash
+                  scriptLocation: inlineScript
+                  inlineScript: |
+                    echo "Getting AKS credentials..."
+                    az aks get-credentials --name $(aksCluster) --resource-group $(aksResourceGroup) --overwrite-existing
 
-            echo "Login to AKS"
-            az aks get-credentials --name $(aksCluster) --resource-group $(aksResourceGroup) --overwrite-existing
-
-            echo "Pull Helm chart from ACR"
-            helm pull oci://${{ variables.acrName }}.azurecr.io/helm/${{ variables.helmChartName }} --version ${{ variables.helmChartVersion }} --untar
-
-      - task: HelmDeploy@1
-        displayName: Helm Upgrade/Install
-        inputs:
-          connectionType: 'Azure Resource Manager'
-          azureSubscription: $(serviceConnection)
-          azureResourceGroup: $(aksResourceGroup)
-          kubernetesCluster: $(aksCluster)
-          namespace: $(namespace)
-          command: upgrade
-          chartType: FilePath
-          chartPath: './mychart/product'
-          releaseName: 'storeapp'
-          install: true
-          waitForExecution: true
+              - task: HelmDeploy@1
+                displayName: Helm Upgrade/Install
+                inputs:
+                  connectionType: 'Azure Resource Manager'
+                  azureSubscription: $(serviceConnection)
+                  azureResourceGroup: $(aksResourceGroup)
+                  kubernetesCluster: $(aksCluster)
+                  namespace: $(namespace)
+                  command: upgrade
+                  chartType: FilePath
+                  chartPath: '$(Pipeline.Workspace)/$(chartName)/product'
+                  releaseName: 'product'
+                  install: true
+                  waitForExecution: false                  

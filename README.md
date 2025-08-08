@@ -139,4 +139,21 @@
 
 # Clean the Azure resources
 
+<<<<<<< HEAD
+
+
+# helmify  
+C:\k8s-05>helmify -f ./manifests/order ./storehelmchart/order
+
+C:\k8s-05>helmify -f ./manifests/product ./storehelmchart/product
+
+C:\k8s-05>helmify -f ./manifests/store-front ./storehelmchart/store-front
+
+C:\k8s-05>helmify -f ./manifests/rabbitmq ./storehelmchart/rabbitmq
+
+C:\k8s-05>helmify -f ./manifests/config ./storehelmchart/config
+
+helmify -f /manifests/ helmchart
+=======
     az group delete --name rg-onlinestore-dev-uksouth-001 --yes --no-wait
+>>>>>>> b15d7e7d16c21ce966e45db054c6b37c506ba5c5

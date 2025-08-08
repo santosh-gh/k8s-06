@@ -1,4 +1,7 @@
-trigger: none
+trigger:
+  paths:
+    include:
+      - app/store-front/**
 
 pool:
   vmImage: 'ubuntu-latest'

@@ -1,4 +1,7 @@
-trigger: none
+trigger:
+  paths:
+    include:
+      - app/order-service/**
 
 pool:
   vmImage: 'ubuntu-latest'

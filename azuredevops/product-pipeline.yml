@@ -1,4 +1,7 @@
-trigger: none
+trigger:
+  paths:
+    include:
+      - app/product-service/**
 
 pool:
   vmImage: 'ubuntu-latest'

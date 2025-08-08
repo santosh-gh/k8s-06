@@ -63,6 +63,9 @@ stages:
             echo "Login to ACR for Helm push"
             az acr login --name ${{ variables.acrName }}
 
+            sed -i "s/tag:.*/tag: $(imageTag)/" ./${{ variables.helmChartName }}/store-front/values.yaml
+            cat ./${{ variables.helmChartName }}/store-front/values.yaml
+
             echo "Enabling OCI support"
             export HELM_EXPERIMENTAL_OCI=1
 

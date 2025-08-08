@@ -13,8 +13,9 @@ variables:
   namespace: 'default'
   environment: "dev"
   artifactName: 'storehelmchart'
+  helmChartPath: './storehelmchart/'
   helmChartName: 'mychart'
-  imageTag: v1 #$(Build.BuildId)   
+  imageTag: $(Build.BuildId)   
   imageName: 'order'
 
 stages:
@@ -56,6 +57,9 @@ stages:
 
             echo "Login to ACR for Helm push"
             az acr login --name ${{ variables.acrName }}
+
+            sed -i "s/tag:.*/tag: $(imageTag)/" ./${{ variables.helmChartName }}/order/values.yaml
+            cat ./${{ variables.helmChartName }}/order/values.yaml
 
             echo "Enabling OCI support"
             export HELM_EXPERIMENTAL_OCI=1
@@ -101,7 +105,7 @@ stages:
           namespace: $(namespace)
           command: upgrade
           chartType: FilePath
-          chartPath: './mychart/order'
+          chartPath: './${{ variables.helmChartName }}/order/'
           releaseName: 'storeapp'
           install: true
           waitForExecution: true                  

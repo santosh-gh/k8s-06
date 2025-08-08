@@ -1,9 +1,6 @@
 # name: 1.0.$(BuildID)
 
 trigger:
-  branches:
-    include:
-      - main
   paths:
     include:
       - infra/*
@@ -11,19 +8,22 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:  
+  - group: 'k8s-dev'
+
 stages:
   - stage: Build
     displayName: "Infra Validatation"
     jobs:
       - template: infraTemplates/infravalidation.yml
         parameters:
-          environment: "dev"
-          serviceconnection: "arm-svc-con"
+          environment: $(environment)
+          serviceconnection: $(serviceConnection)
 
   - stage: Dev
     displayName: "Dev"
     jobs:
       - template: infraTemplates/deployresources.yml
         parameters:
-          environment: "dev"
-          serviceconnection: "arm-svc-con"
+          environment: $(environment)
+          serviceconnection: $(serviceConnection)

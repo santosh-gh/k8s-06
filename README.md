@@ -108,6 +108,8 @@
         AKS_NAME="aks-onlinestore-dev-uksouth-001"
         az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_NAME --overwrite-existing
 
+        alias k=kubectl
+
     # Short name for kubectl
 
     # Show all existing objects

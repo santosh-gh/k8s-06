@@ -18,7 +18,7 @@
 
     Part5: Deploying microservice applications in AKS using Helm Chat and Azure Pipeline
     GitHub: https://github.com/santosh-gh/k8s-04
-    YouTube: https://www.youtube.com/watch?v=VAiR3sNavh0
+    YouTube: https://www.youtube.com/watch?v=MnWe2KGRrxg&t=883s
 
     Part6: Deploying microservice applications in AKS using Helm Chat and Azure Pipeline
            With dynamically update the image tag in values.yaml
@@ -123,19 +123,33 @@
 
 # Helm and Helmify
 
-    # helmify 
+    # helmify
 
-    helmify -f ./manifests helmchart
+    helmify -f ./manifests/order ./storehelmchart/order
+
+    helmify -f ./manifests/product ./storehelmchart/product
+
+    helmify -f ./manifests/store-front ./storehelmchart/store-front
+
+    helmify -f ./manifests/rabbitmq ./storehelmchart/rabbitmq
+
+    helmify -f ./manifests/config ./storehelmchart/config
 
     # Helm Deploy
 
-    helm install online-store ./helmchart
-
-    helm uninstall online-store
+    helm install order ./helmchart/order
+    helm install product ./helmchart/product
+    helm install store-front./helmchart/store-front
+    helm install rabbitmq ./helmchart/rabbitmq
+    helm install config ./helmchart/config
 
     # Delete Services using helm        
      
-    helm uninstall online-store
+    helm uninstall order
+    helm uninstall product
+    helm uninstall store-front
+    helm uninstall rabbitmq
+    helm uninstall config
 
 # Verify the Deployment
 
@@ -146,21 +160,9 @@
 
 # Clean the Azure resources
 
-<<<<<<< HEAD
-
 
 # helmify  
-C:\k8s-05>helmify -f ./manifests/order ./storehelmchart/order
+   
 
-C:\k8s-05>helmify -f ./manifests/product ./storehelmchart/product
-
-C:\k8s-05>helmify -f ./manifests/store-front ./storehelmchart/store-front
-
-C:\k8s-05>helmify -f ./manifests/rabbitmq ./storehelmchart/rabbitmq
-
-C:\k8s-05>helmify -f ./manifests/config ./storehelmchart/config
-
-helmify -f /manifests/ helmchart
-=======
     az group delete --name rg-onlinestore-dev-uksouth-001 --yes --no-wait
->>>>>>> b15d7e7d16c21ce966e45db054c6b37c506ba5c5
+

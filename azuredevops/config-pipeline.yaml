@@ -5,8 +5,6 @@ pool:
 
 variables:
 - group: 'k8s-dev'
-- name: namespace
-  value: 'default'
 - name: chartName 
   value: 'storehelmchart'
 

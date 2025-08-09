@@ -7,19 +7,13 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  serviceConnection: 'arm-svc-con'
-  aksCluster: 'aks-onlinestore-dev-uksouth-001'
-  aksResourceGroup: 'rg-onlinestore-dev-uksouth-001'
-  acrServiceConnection: 'acr-svc-connection'
-  aksServiceConnection: 'aks-svc-connection'
-  acrName: 'acronlinestoredevuksouth001'
-  namespace: 'default'
-  environment: "dev"
-  artifactName: 'storehelmchart'
-  helmChartPath: './storehelmchart/'
-  helmChartName: 'mychart'
-  imageTag: $(Build.BuildId)   
-  imageName: 'order'
+- group: 'k8s-dev'
+- name: chartName 
+  value: 'storehelmchart'
+- name: imageTag
+  value: $(Build.BuildId)
+- name: imageName
+  value: 'order'
 
 stages:
   - stage: Build

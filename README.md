@@ -160,9 +160,5 @@
 
 # Clean the Azure resources
 
-
-# helmify  
-   
-
     az group delete --name rg-onlinestore-dev-uksouth-001 --yes --no-wait
 

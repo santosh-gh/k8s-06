@@ -84,4 +84,4 @@ stages:
                   chartPath: '$(Pipeline.Workspace)/$(chartName)/store-front'
                   releaseName: 'store-front'
                   install: true
-                  waitForExecution: false                  
+                  waitForExecution: false       

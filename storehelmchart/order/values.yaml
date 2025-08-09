@@ -29,7 +29,6 @@ orderService:
   waitForRabbitmq:
     image:
       repository: busybox
-      tag: latest
     resources:
       limits:
         cpu: 75m

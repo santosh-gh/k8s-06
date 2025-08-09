@@ -68,8 +68,7 @@ spec:
         env:
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ quote .Values.kubernetesClusterDomain }}
-        image: {{ .Values.orderService.waitForRabbitmq.image.repository }}:{{ .Values.orderService.waitForRabbitmq.image.tag
-          | default .Chart.AppVersion }}
+        image: busybox
         name: wait-for-rabbitmq
         resources: {{- toYaml .Values.orderService.waitForRabbitmq.resources | nindent
           10 }}

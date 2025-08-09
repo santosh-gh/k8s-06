@@ -67,9 +67,9 @@ stages:
                     az aks get-credentials --name $(aksCluster) --resource-group $(aksResourceGroup) --overwrite-existing
 
                     echo "Updating image tag in values.yaml..."
-                    sed -i 's/\(tag:\s*\).*/\1$(imageTag)/' $(Pipeline.Workspace)/$(chartName)/order/values.yaml
+                    sed -i 's/\(tag:\s*\).*/\1$(imageTag)/' $(Pipeline.Workspace)/storehelmchart/order/values.yaml
                     echo "Updated values.yaml:"
-                    cat $(Pipeline.Workspace)/$(chartName)/order/values.yaml
+                    cat $(Pipeline.Workspace)/storehelmchart/order/values.yaml
 
               - task: HelmDeploy@1
                 displayName: Helm Upgrade/Install

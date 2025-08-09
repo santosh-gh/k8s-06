@@ -20,6 +20,11 @@
     GitHub: https://github.com/santosh-gh/k8s-04
     YouTube: https://www.youtube.com/watch?v=VAiR3sNavh0
 
+    Part6: Deploying microservice applications in AKS using Helm Chat and Azure Pipeline
+           With dynamically update the image tag in values.yaml
+    GitHub: https://github.com/santosh-gh/k8s-06
+    YouTube: https://www.youtube.com/watch?v=VAiR3sNavh0
+
 # Architesture
 
 ![Store Architesture](aks-store-architecture.png)

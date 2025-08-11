@@ -3,10 +3,10 @@ kind: Service
 metadata:
   name: product-service
 spec:
-  type: {{ .Values.productService.type }}
-  selector:
-    app: product-service
+  type: ClusterIP
   ports:
     - name: http
       port: 3002
       targetPort: 3002
+  selector:
+    app: product-service

@@ -1,29 +1,58 @@
 # Part 6: Deploying microservice applications in AKS using Helm Chat and Azure Pipeline(Dynamically update the image tag in values.yaml)
 
-    Part1: Manual Deployment using comand line tools (AzCLI, Docker Desktop and kubectl)  
-    GitHub: https://github.com/santosh-gh/k8s-01
+    Part1:   Manual Deployment (AzCLI + Docker Desktop + kubectl)  
+    GitHub:  https://github.com/santosh-gh/k8s-01
     YouTube: https://youtu.be/zoJ7MMPVqFY
 
-    Part2: Automated Deployment using Azure DevOps Pipeline
-    GitHub: https://github.com/santosh-gh/k8s-02
+    Part2:   Automated Deployment (AzCLI + Docker + kubect + Azure Pipeline)
+    GitHub:  https://github.com/santosh-gh/k8s-02
     YouTube: https://youtu.be/nnomaZVHg9I
 
-    Part3: Automated Infra Deployment using Bicep and Azure DevOps Pipeline
-    GitHub: https://github.com/santosh-gh/k8s-03
+    Part3:   Automated Infra Deployment (Bicep + Azure Pipeline)
+    GitHub:  https://github.com/santosh-gh/k8s-03
     YouTube: https://www.youtube.com/watch?v=5PAdDPHn8F8
 
-    Part4: Deploying microservice applications in AKS using Helm Chat
-    GitHub: https://github.com/santosh-gh/k8s-04
+    Part4:   Manual Deployment (AzCLI + Docker Desktop + Helm charts + kubectl) 
+    GitHub:  https://github.com/santosh-gh/k8s-04
     YouTube: https://www.youtube.com/watch?v=VAiR3sNavh0
 
-    Part5: Deploying microservice applications in AKS using Helm Chat and Azure Pipeline
-    GitHub: https://github.com/santosh-gh/k8s-04
+    Part5:   Automated Deployment (AzCLI + Docker + Helm charts + kubectl + Azure Pipeline) 
+    GitHub:  https://github.com/santosh-gh/k8s-04
     YouTube: https://www.youtube.com/watch?v=MnWe2KGRrxg&t=883s
 
-    Part6: Deploying microservice applications in AKS using Helm Chat and Azure Pipeline
-           With dynamically update the image tag in values.yaml
-    GitHub: https://github.com/santosh-gh/k8s-06
-    YouTube: https://www.youtube.com/watch?v=VAiR3sNavh0
+    Part6:   Automated Deployment (AzCLI + Docker + Helm charts + kubectl + Azure Pipeline) 
+             Dynamically update the image tag in values.yaml
+    GitHub:  https://github.com/santosh-gh/k8s-06
+    YouTube: https://www.youtube.com/watch?v=Nx0defm8T6g&t=11s
+
+    Part7:   Automated Deployment (AzCLI + Docker + Helm charts + kubectl + Azure Pipeline)
+             Store the helm chart in ACR
+             Dynamically update the image tag in values.yaml
+             Dynamically update the Chart version in Chart.yaml
+
+    GitHub:  https://github.com/santosh-gh/k8s-07
+    YouTube: https://www.youtube.com/watch?v=Y3RaxSZNTaU&t=1s
+
+    Part8:   Automated Deployment (AzCLI + Docker + Helm charts + kubectl + Azure Pipeline)
+             Store the helm chart in ACR
+             Dynamically update the image tag in values.yaml
+             Dynamically update the Chart version in Chart.yaml
+             Deploy into multiple environments (dev, test, prod) with approval gates
+
+    GitHub:  https://github.com/santosh-gh/k8s-08
+    YouTube: https://www.youtube.com/watch?v=oNysAAGijGk&t=43s
+
+    Part9:   Manual Deployment (AzCLI + Docker + kustomize + kubectl)          
+             Deploy into multiple environments (dev, test, prod) through command line
+
+    GitHub:  https://github.com/santosh-gh/k8s-09
+    YouTube: https://www.youtube.com/watch?v=Jtz1KldOPAA&t=1s
+
+    Part10:  Automated Deployment (AzCLI + Docker + kustomize + kubectl + Azure Pipeline)          
+             Deploy into multiple environments (dev, test, prod) through automated pipeline
+
+    GitHub:  https://github.com/santosh-gh/k8s-10
+    YouTube: https://www.youtube.com/watch?v=m5ZXmOk0IBs&t=43s
 
 # Architesture
 

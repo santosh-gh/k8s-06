@@ -150,6 +150,34 @@
 
         k get all   
 
+
+# Docker Build and Push
+
+    # Log in to ACR
+
+        ACR_NAME="acronlinestoredevuksouth001"
+        az acr login --name $ACR_NAME
+
+    # Build and push the Docker images to ACR
+
+        # Order Service
+        docker build -t order ./app/order-service 
+        docker tag order:latest $ACR_NAME.azurecr.io/order:v1
+        docker push $ACR_NAME.azurecr.io/order:v1
+
+        # Product Service
+        docker build -t product ./app/product-service 
+        docker tag product:latest $ACR_NAME.azurecr.io/product:v1
+        docker push $ACR_NAME.azurecr.io/product:v1
+
+        # Store Front Service
+        docker build -t store-front ./app/store-front 
+        docker tag store-front:latest $ACR_NAME.azurecr.io/store-front:v1
+        docker push $ACR_NAME.azurecr.io/store-front:v1
+
+        docker images
+
+
 # Helm and Helmify
 
     # helmify
@@ -166,11 +194,12 @@
 
     # Helm Deploy
 
-    helm install order ./helmchart/order
-    helm install product ./helmchart/product
-    helm install store-front./helmchart/store-front
-    helm install rabbitmq ./helmchart/rabbitmq
-    helm install config ./helmchart/config
+    helm install config ./storehelmchart/config
+    helm install rabbitmq ./storehelmchart/rabbitmq    
+    helm install order ./storehelmchart/order
+    helm install product ./storehelmchart/product
+    helm install store-front ./storehelmchart/store-front
+   
 
     # Delete Services using helm        
      
